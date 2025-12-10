@@ -5,7 +5,6 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 import os
 import csv
-import keras    
 
 lettres = ['A','B','F','G','H','J','K','L']
 lettres1 = ['A','B','F','G']
@@ -21,9 +20,9 @@ for i in fichiers:
     for j in docs :
         datas.append(f'./lettres/{i}/{j}')
 
-print(datas)"""
+print(datas)
 
-
+"""
 def resizer(img):
     L = []
     for i in range(0,512,64):   
@@ -37,7 +36,7 @@ def get_points(sides,img):
     points = pd.DataFrame(columns=['x', 'y'])
     for i in range(sides):
         for j in range(sides):
-            if img.getpixel((i, j)) == 0:
+            if img.getpixel((i, j)) < 128:
                 points.loc[len(points)] = [i, 63 - j]
     return points
 
@@ -80,52 +79,56 @@ def lettre_bin(lettre):
 
 
 nom_csv = 'result.csv'
+
 """
 for img in L:
     points = get_points(64)
     all_coefs.append(regression(points))
     writing_csv(all_coefs,csv)"""
 """
+i,j = 0,0
 for images in datas:
+    print(i)
+    i+=1
     img =Image.open(images).convert('L')
     L = resizer(img)
     all_coefs= [] 
     for img in L:
+        print(j)
+        j+=1
         points = get_points(64,img)
         a = regression(points)
         b = (2*a)/(1+a**2)
         c = (1-a**2)/(1+a**2)
         all_coefs.append(b)
         all_coefs.append(c)
-    if images[10] in lettres:
-        all_coefs += lettre_bin(images[10])
+    if images[10].upper() in lettres:
+        all_coefs += lettre_bin(images[10].upper())
     else:
-        all_coefs += lettre_bin(images[12])
+        all_coefs += lettre_bin(images[12].upper())
     writing_csv(all_coefs,nom_csv)
 """
-"""
-images = './lettres/O/B10.png'
+
+images = 'a_test.png'
 img =Image.open(images).convert('L')
 L = resizer(img)
 all_coefs= [] 
 for img in L:
+    img.show()
     points = get_points(64,img)
     a = regression(points)
-    a = (2*a)/(1+a**2)
-    b = (1-a**2)/(1+a**2)
-    all_coefs.append(a)
+    b = (2*a)/(1+a**2)
+    c = (1-a**2)/(1+a**2)
+    print(a)
+    print(b)
     all_coefs.append(b)
-if images[10] in lettres:
-    all_coefs += lettre_bin(images[10])
+    all_coefs.append(c)
+if "A"in lettres:
+    all_coefs += lettre_bin("A")
 else:
     all_coefs += lettre_bin(images[12])
 print(all_coefs)
 print(len(all_coefs))
-"""
-
-image = './test_droite_64.png'
-img = Image.open(image).convert('L')
-print(get_points(64,img))
 
 
 
